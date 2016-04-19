@@ -1,7 +1,5 @@
 import xml.sax
-
 from SentimenAnalysis_NLP_DataMining import model
-
 
 class xml_handler( xml.sax.ContentHandler ):
 
@@ -12,13 +10,11 @@ class xml_handler( xml.sax.ContentHandler ):
         self.rating = ""
         self.label = ""
         self.text = ""
-        self.product_class = {};
+        self.product_class_dict = {};
     # Call when an element starts
 
     def startElement(self, tag, attributes):
         self.CurrentData = tag
-        if tag == "DOC":
-            print("*****DOC*****")
 
    # Call when an elements ends
     def endElement(self, tag):
@@ -37,10 +33,10 @@ class xml_handler( xml.sax.ContentHandler ):
             l=self.label;
         elif self.CurrentData == "DOCID":
             d=self.docid;
-        m=model(d,l,rating,pc,t)
-        if(l not in self.product_class.keys()):
-            self.product_class[l]=[];
-        self.product_class[l].append(m);
+        m=model.model(d,l,rating,pc,t)
+        if(l not in self.product_class_dict.keys()):
+            self.product_class_dict[l]=[];
+        self.product_class_dict[l].append(m);
         self.CurrentData="";
 
    # Call when a character is read
@@ -57,7 +53,7 @@ class xml_handler( xml.sax.ContentHandler ):
             self.text = content
 
     def __iter__(self):
-        return self.product_class;
+        return self.product_class_dict;
 
 def main():
     # create an XMLReader
