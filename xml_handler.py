@@ -10,47 +10,62 @@ class xml_parser:
         for lines in  open(input):
             sxml += lines
         tree=et.fromstring(sxml)
+        #map for auto, holding inverted list for word in auto category
         il_auto = {};
+        # map for camera, holding inverted list for word in camera category
         il_camera = {};
         sw = self.get_stopwords();
+
         for el in tree.findall('DOC'):
             print('-------------------');
-            c="";
-            r="";
-            d="";
+            cat="";
+            rating="";
+            doc="";
             for ch in el.getchildren():
                 if(ch.tag=="DOCID"):
-                    d=ch.text;
+                    doc=ch.text;
                 if (ch.tag == "CLASS"):
-                    c=ch.text.strip().lower();
+                    cat=ch.text.strip().lower();
                 if ch.tag == "rating":
-                    r=ch.text.strip();
+                    rating=ch.text.strip();
                 if ch.tag == "TEXT":
                     text=ch.text.strip().split(' ');
-                    df_updated={}
-                    for word in text:
-                        w=word.lower()
-                        if w not in sw:
-                            if(c=="camera"):
-                                self.update_dict(il_camera,w, df_updated, r, d);
-                            if (c == "auto"):
-                                self.update_dict(il_camera, w, df_updated, r, d);
-                    if ch not in self.data_dict:
-                        self.data_dict[c]=[]
-                    if c=="camera":
-                        self.data_dict[c].append(il_camera);
-                    elif c=="auto":
-                        self.data_dict[c].append(il_auto);
+                    #df_updated={}
+                    word_count=self.word_count(text, sw);
+                    for word in word_count:
+                            if(cat=="camera"):
+                                self.update_dict(il_camera,word,word_count[word],doc, rating);
+                            if (cat == "auto"):
+                                self.update_dict(il_auto, word,word_count[word], doc,rating);
+                    if cat not in self.data_dict:
+                        self.data_dict[cat]=[]
+                    if cat=="camera":
+                        self.data_dict[cat].append(il_camera);
+                    elif cat=="auto":
+                        self.data_dict[cat].append(il_auto);
 
-    def update_dict(self, d, word, df_updated, r, doc):
-        if (word not in d):
-            d[word] = inverted_lists.inverted_list();
-        d[word].tf += 1;
-        if (word not in df_updated):
-            df_updated[word] = True;
-            d[word].df += 1;
-            d[word].ratings.add(r)
-            d[word].docs.add(doc)
+    def update_dict(self, il, word,count,doc, r):
+        if (word not in il):
+            il[word] = inverted_lists.inverted_list();
+        #il[word].tf += 1;
+        #if (word not in df_updated):
+        #    df_updated[word] = True;
+            #il[word].df += 1;
+            il[word].ratings.add(r)
+            il[word].docs.append((doc,count));
+
+    def word_count(self,text, stopwords):
+        d={};
+        for word in text:
+            w=word.lower();
+            if w not in stopwords:
+                if w not in d:
+                    d[w]=1;
+                else:
+                    d[w]+=1;
+        return d;
+
+
 
     def get_stopwords(self):
         stopwords = set([]);
