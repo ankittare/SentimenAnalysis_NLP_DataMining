@@ -1,69 +1,61 @@
-import xml.sax
+import xml.etree.cElementTree as et
 from SentimenAnalysis_NLP_DataMining import model
-
-class xml_handler( xml.sax.ContentHandler ):
+from SentimenAnalysis_NLP_DataMining import inverted_lists
+class xml_parser:
 
     def __init__(self):
-        self.CurrentData = ""
-        self.docid = ""
-        self.product_class = ""
-        self.rating = ""
-        self.label = ""
-        self.text = ""
-        self.product_class_dict = {};
+        self.data_dict = {};
     # Call when an element starts
 
-    def startElement(self, tag, attributes):
-        self.CurrentData = tag
-
-   # Call when an elements ends
-    def endElement(self, tag):
-        pc="";
-        rating="";
-        t="";
-        l="";
-        d="";
-        if self.CurrentData == "CLASS":
-            pc=self.product_class;
-        elif self.CurrentData == "rating":
-            rating=self.rating
-        elif self.CurrentData == "TEXT":
-            t=self.text;
-        elif self.CurrentData == "label":
-            l=self.label;
-        elif self.CurrentData == "DOCID":
-            d=self.docid;
-        m=model.model(d,l,rating,pc,t)
-        if(l not in self.product_class_dict.keys()):
-            self.product_class_dict[l]=[];
-        self.product_class_dict[l].append(m);
-        self.CurrentData="";
-
-   # Call when a character is read
-    def characters(self, content):
-        if self.CurrentData == "DOCID":
-            self.docid = content
-        elif self.CurrentData == "CLASS":
-            self.product_class = content
-        elif self.CurrentData == "rating":
-            self.rating = content
-        elif self.CurrentData == "label":
-            self.label = content
-        elif self.CurrentData == "TEXT":
-            self.text = content
-
+    def parse(self):
+        sxml="";
+        for lines in  open("C:\\Users\\Ankit\\Documents\\Programming\\devpy\\SentimenAnalysis_NLP_DataMining\\data\\sample.txt"):
+            sxml += lines
+        tree=et.fromstring(sxml)
+        for el in tree.findall('DOC'):
+            print('-------------------');
+            m = model.model();
+            il_auto={};
+            il_camera = {};
+            c="";
+            r="";
+            sw=model.model.get_stopwords();
+            for ch in el.getchildren():
+                if(ch.tag=="DOCID"):
+                    m.docid=ch.text
+                if (ch.tag == "CLASS"):
+                    m.product_class = ch.text
+                    c=ch.text.strip().lower();
+                if (ch.tag == "label"):
+                    m.label = ch.text
+                if (ch.tag == "rating"):
+                    m.rating = ch.text
+                    r=ch.text.strip();
+                if (ch.tag == "TEXT"):
+                    m.text=ch.text.strip().split(' ');
+                    df_updated={}
+                    for word in m.text:
+                        w=word.lower()
+                        if w not in sw:
+                            if(c=="camera"):
+                                if (w not in il_camera):
+                                    il_camera[w] = inverted_lists.inverted_list();
+                                il_camera[w].tf += 1;
+                                if (w not in df_updated):
+                                    df_updated[w] == True
+                                    il_camera[w].df += 1;
+                                    il_camera[w].ratings.add(r)
+                            if (c == "auto"):
+                                if (w not in il_auto):
+                                    il_auto[w] = inverted_lists.inverted_list();
+                                il_auto[w].tf += 1;
+                                if (w not in df_updated):
+                                    df_updated[w] == True
+                                    il_auto[w].df += 1;
+                                    il_auto[w].ratings.add(r)
+            if ch not in self.data_dict:
+                self.data_dict[c]=[]
+            self.data_dict[c].append(m);
+            
     def __iter__(self):
-        return self.product_class_dict;
-
-def main():
-    # create an XMLReader
-    parser = xml.sax.make_parser()
-    # turn off namepsaces
-    parser.setFeature(xml.sax.handler.feature_namespaces, 0)
-    # override the default ContextHandler
-    Handler = xml_handler()
-    parser.setContentHandler( Handler );
-    parser.parse("C:\\Users\\Ankit\\Documents\\Programming\\devpy\\SentimenAnalysis_NLP_DataMining\\cleaned_d1.txt");
-    print(Handler.__iter__());
-
-main();
+        return self.data_dict;

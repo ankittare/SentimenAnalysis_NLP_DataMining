@@ -1,8 +1,8 @@
 import re;
 def clean():
     #TODO: fix bug of  &quot;infinity&quot; line truncating
-    f=open("C:\\Users\\Ankit\\Documents\\Programming\\devpy\\SentimenAnalysis_NLP_DataMining\\D1.txt", 'r', encoding="utf8");
-    o=open("C:\\Users\\Ankit\\Documents\\Programming\\devpy\\SentimenAnalysis_NLP_DataMining\\cleaned_d1.txt", 'w', encoding="utf8");
+    f=open("C:\\Users\\Ankit\\Documents\\Programming\\devpy\\SentimenAnalysis_NLP_DataMining\\data\\D1.txt", 'r', encoding="utf8");
+    o=open("C:\\Users\\Ankit\\Documents\\Programming\\devpy\\SentimenAnalysis_NLP_DataMining\\data\\cleaned_d1.txt", 'w', encoding="utf8");
     flag=False;
     for lines in f:
         if lines!="":
