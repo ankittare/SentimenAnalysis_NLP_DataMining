@@ -1,7 +1,7 @@
 from SentimenAnalysis_NLP_DataMining.xml_handler import xml_parser
 def get_data():
     handler=xml_parser();
-    handler.parse("C:\\Users\\Ankit\\Documents\\Programming\\devpy\\SentimenAnalysis_NLP_DataMining\\data\\sample.txt");
+    handler.parse("C:\\Users\\Ankit\\Documents\\Programming\\devpy\\SentimenAnalysis_NLP_DataMining\\data\\cleaned_d1.txt");
     p_dict=handler.__iter__();
     for c in p_dict:
         print("*****************"+c+"*********************")
