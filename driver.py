@@ -4,7 +4,6 @@ def get_data():
     handler.parse("C:\\Users\\Ankit\\Documents\\Programming\\devpy\\SentimenAnalysis_NLP_DataMining\\data\\sample.txt");
     outfile=open("C:\\Users\\Ankit\\Documents\\Programming\\devpy\\SentimenAnalysis_NLP_DataMining\\data\\inverted_list.txt", 'w');
     [p_dict,d_dict]=handler.__iter__();
-    sorted([p_dict, key=lambda x: x[1]);
     print(d_dict);
     for c in p_dict:
         print("*****************"+c+"*********************")
@@ -20,6 +19,9 @@ def get_data():
 # the each ratings in which the
 def get_feature_matrix():
     d=0;
+
+def variance_matrix():
+    x=0;
 
 
 get_data();

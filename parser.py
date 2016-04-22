@@ -7,7 +7,7 @@ class xml_parser:
 
     def __init__(self):
         self.data_dict = {};
-        self.doc_ratings={}
+        self.doc_ratings={};
 
     def get_input_string(self, input):
         sxml = "";
