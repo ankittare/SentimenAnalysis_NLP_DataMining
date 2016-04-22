@@ -8,6 +8,7 @@ class xml_parser:
     def __init__(self):
         self.data_dict = {};
         self.doc_ratings={};
+        self.word_vector=set([]);
 
     def get_input_string(self, input):
         sxml = "";
@@ -19,9 +20,9 @@ class xml_parser:
 
         tree=et.fromstring(self.get_input_string(input))
         #mai linverted list for both camera and auto
-        il={};
-        il["camera"]={};
-        il["auto"]={};
+
+        self.data_dict["camera"]={};
+        self.data_dict["auto"]={};
 
         for el in tree.findall('DOC'):
             cat,rating,doc="","","";
@@ -37,13 +38,14 @@ class xml_parser:
                     text=ch.text.strip().split(' ');
                     #removing stop words and stemming.
                     processed_text=stemmer(text);
+                    #self.doc_ratings[doc] = (rating, processed_text);
                     word_count=self.word_count(processed_text);
                     #print(word_count, doc, rating);
-                    for word in word_count:
-                            self.update_dict(il[cat],word,word_count[word],doc, rating);
                     if cat not in self.data_dict:
-                        self.data_dict[cat]=[]
-                    self.data_dict[cat].append(il[cat]);
+                        self.data_dict[cat] = []
+                    for word in word_count:
+                            self.update_dict(self.data_dict[cat],word,word_count[word],doc, rating);
+                    #self.data_dict[cat].append(il[cat]);
 
     def update_dict(self, il, word,count,doc, r):
         if (word not in il):
@@ -60,6 +62,7 @@ class xml_parser:
     def word_count(self,text):
         d={};
         for w in text:
+            self.word_vector.add(w);
             if w not in d:
                 d[w]=1;
             else:
@@ -67,4 +70,4 @@ class xml_parser:
         return d;
 
     def __iter__(self):
-        return [self.data_dict,self.doc_ratings];
+        return [self.data_dict,self.doc_ratings, self.word_vector];
