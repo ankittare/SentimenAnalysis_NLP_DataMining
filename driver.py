@@ -4,41 +4,37 @@ import statistics
 def get_data():
     handler=xml_parser();
     handler.parse("C:\\Users\\Ankit\\Documents\\Programming\\devpy\\SentimenAnalysis_NLP_DataMining\\data\\sample.txt");
-    outfile=open("C:\\Users\\Ankit\\Documents\\Programming\\devpy\\SentimenAnalysis_NLP_DataMining\\data\\inverted_list.txt", 'w');
+    feature_outfile=open("C:\\Users\\Ankit\\Documents\\Programming\\devpy\\SentimenAnalysis_NLP_DataMining\\data\\feature.txt", 'w');
+    response_outfile = open("C:\\Users\\Ankit\\Documents\\Programming\\devpy\\SentimenAnalysis_NLP_DataMining\\data\\response.txt",'w');
     [p_dict,d_dict, word_vector]=handler.__iter__();
-    '''
-    print(d_dict);
-    for c in p_dict:
-        print("*****************"+c+"*********************")
-        for words in p_dict[c]:
-            s=words, p_dict[c][words].tf/p_dict[c][words].df, p_dict[c][words].docs, p_dict[c][words].ratings;
-            outfile.write(str(s)+"\n")
-            outfile.flush()
-    outfile.close()
-    '''
-    [feature_matrix, response_matrix]=get_feature_matrix(variance_matrix(p_dict['camera'], d_dict, word_vector), p_dict['camera'], d_dict, word_vector);
+
+    [feature_matrix, response_matrix]=get_feature_matrix(variance_matrix(p_dict['camera'], d_dict, word_vector), p_dict['camera'], d_dict);
+    for rows in feature_matrix:
+        feature_outfile.write(str(rows)+"\n");
+        feature_outfile.flush();
+    for rows in response_matrix:
+        response_outfile.write(str(rows)+"\n");
+        response_outfile.flush();
 
 # feature matrix in this case shall be a dict of arrays. Keys of dict will be the words, indices of array(values) coresponds to
 # the each ratings in which the
-def get_feature_matrix(var_matrix, p_dict, d_dict, wv):
+def get_feature_matrix(var_matrix, p_dict, d_dict):
     matrix = []
     response_matrix=[];
-    word_vector = list(wv);
     i = 0;
     for d in d_dict:
         response_matrix.append(float(d_dict[d]));
         matrix.append([])
         for elem in var_matrix:
-            print(elem[1]);
+            #print(elem[1]);
             key=int(d.strip());
             if elem[1] in p_dict and key in p_dict[elem[1]].docs:
                 matrix[i].append(p_dict[elem[1]].docs[key]);
             else:
                 matrix[i].append(0)
         i += 1;
-
-    for i in range(0, len(matrix)):
-        print(matrix[i]);
+    #for i in range(0, len(matrix)):
+        #print(matrix[i]);
     return [matrix, response_matrix];
 
 #takign variance of each term in the dict and removing all the terms with less than 0.5 variance

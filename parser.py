@@ -19,7 +19,6 @@ class xml_parser:
     def parse(self, input):
 
         tree=et.fromstring(self.get_input_string(input))
-        #mai linverted list for both camera and auto
 
         self.data_dict["camera"]={};
         self.data_dict["auto"]={};
@@ -36,16 +35,12 @@ class xml_parser:
                     self.doc_ratings[doc]=rating;
                 if ch.tag == "TEXT":
                     text=ch.text.strip().split(' ');
-                    #removing stop words and stemming.
                     processed_text=stemmer(text);
-                    #self.doc_ratings[doc] = (rating, processed_text);
                     word_count=self.word_count(processed_text);
-                    #print(word_count, doc, rating);
                     if cat not in self.data_dict:
                         self.data_dict[cat] = []
                     for word in word_count:
                             self.update_dict(self.data_dict[cat],word,word_count[word],doc, rating);
-                    #self.data_dict[cat].append(il[cat]);
 
     def update_dict(self, il, word,count,doc, r):
         if (word not in il):
